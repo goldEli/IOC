@@ -1,6 +1,51 @@
-// Import stylesheets
-import './style.css';
+import { Inject, Injectable } from './decorators';
+import { Dependencies } from './manager/modules';
+import { LogService } from './services/LogServiceAbstract';
 
-// Write TypeScript code!
-const appDiv: HTMLElement = document.getElementById('app');
-appDiv.innerHTML = `<h1>TypeScript 123</h1>`;
+class InjectedServiceA {
+  @Inject(Dependencies.LogServiceA)
+  private logService: LogService;
+  test() {
+    this.logService.log('test');
+  }
+}
+
+class InjectedServiceB {
+  @Inject(Dependencies.LogServiceB)
+  private logService: LogService;
+  test() {
+    this.logService.log('test');
+  }
+}
+
+const aInstance = new InjectedServiceA();
+aInstance.test();
+const bInstance = new InjectedServiceB();
+bInstance.test();
+/**
+ Output:
+LogServiceA -> test
+LogServiceB -> test
+ */
+
+@Injectable(Dependencies.LogServiceC)
+class LogServiceC extends LogService {
+  log(msg: string): void {
+    console.log(`LogServiceC -> ${msg}`);
+  }
+}
+
+class InjectedServiceC {
+  @Inject(Dependencies.LogServiceC)
+  private logService: LogService;
+  test() {
+    this.logService.log("test");
+  }
+}
+const cInstance = new InjectedServiceC();
+cInstance.test();
+
+/**
+Output:
+LogServiceC -> test
+ */
